@@ -2,10 +2,10 @@ name: Android Build APK
 
 on:
   push:
-    branches: [ main, master ]  # 推送到主分支时触发
+    branches: [ main, master ]
   pull_request:
-    branches: [ main, master ]  # 针对主分支创建PR时触发
-  workflow_dispatch:            # 允许在GitHub网页界面手动触发工作流
+    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -27,35 +27,42 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # 4. 缓存 Gradle 依赖，显著加速后续构建
+      # 4. 缓存 Gradle 依赖
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
           path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
+            ～/.gradle/caches
+            ～/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # 5. 确保 gradlew 有执行权限
+      # 5. 赋予 gradlew 执行权限
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 6. 执行 Debug APK 构建
-      - name: Build Debug APK with Gradle
-        run: ./gradlew assembleDebug
+      # 6. 清理并构建 Debug APK（带详细日志）
+      - name: Build Debug APK
+        run: ./gradlew clean assembleDebug --info
 
-      # 7. (可选) 查找生成的APK文件，用于调试路径问题
-      - name: Find and list generated APK files
-        run: find . -name "*.apk" -type f | head -n 5
-        continue-on-error: true  # 即使没找到文件，工作流也不会失败
+      # 7. 【关键】验证 APK 是否生成
+      - name: Locate APK file
+        id: locate_apk
+        run: |
+          apk_path=$(find . -path "*/build/outputs/apk/*/*debug*.apk" -type f | head -n 1)
+          if [ -z "$apk_path" ]; then
+            echo "❌ ERROR: No debug APK found after build!"
+            echo "Please check your build.gradle configuration and Gradle logs."
+            exit 1
+          fi
+          echo "✅ Found APK: $apk_path"
+          echo "apk_path=$apk_path" >> $GITHUB_OUTPUT
 
-      # 8. 上传APK作为工作流产物
+      # 8. 上传 APK 作为产物
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
-          path: app/build/outputs/apk/**/*.apk
-    # 或者用通配符匹配所有 APK
-    # path: app/build/outputs/apk/**/*.apk
+          path: ${{ steps.locate_apk.outputs.apk_path }}
+          if-no-files-found: error  # 显式报错（双重保险）
