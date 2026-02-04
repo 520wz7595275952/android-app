@@ -35,8 +35,11 @@ jobs:
     - name: Build with Gradle
       run: cd PromptImageManager && ./gradlew assembleDebug
       
+    - name: Find APK files
+      run: find PromptImageManager -name "*.apk" -type f
+      
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
-        path: PromptImageManager/app/build/outputs/apk/debug/app-debug.apk
+        path: PromptImageManager/**/app-debug*.apk
