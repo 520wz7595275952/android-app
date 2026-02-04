@@ -27,16 +27,16 @@ jobs:
         path: |
           ~/.gradle/caches
           ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/PromptImageManager/*.gradle*', '**/PromptImageManager/gradle-wrapper.properties') }}
         
     - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      run: chmod +x PromptImageManager/gradlew
       
     - name: Build with Gradle
-      run: ./gradlew assembleDebug
+      run: cd PromptImageManager && ./gradlew assembleDebug
       
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: PromptImageManager/app/build/outputs/apk/debug/app-debug.apk
