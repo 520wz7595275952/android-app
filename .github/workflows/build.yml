@@ -1,45 +1,60 @@
-name: Build Android APK
+name: Android Build APK
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [ main, master ]  # 推送到主分支时触发
+  pull_request:
+    branches: [ main, master ]  # 针对主分支创建PR时触发
+  workflow_dispatch:            # 允许在GitHub网页界面手动触发工作流
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-      
-    - name: Cache Gradle packages
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/PromptImageManager/*.gradle*', '**/PromptImageManager/gradle-wrapper.properties') }}
-        
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-      
-    - name: Build with Gradle
-      run: ./gradlew assembleDebug
-      
-    - name: Find APK files
-      run: find . -name "*.apk" -type f
-      
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-debug
-        path: app/build/outputs/apk/debug/app-debug.apk
+      # 1. 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. 设置 Java 环境
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 3. 设置 Android SDK
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      # 4. 缓存 Gradle 依赖，显著加速后续构建
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # 5. 确保 gradlew 有执行权限
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 6. 执行 Debug APK 构建
+      - name: Build Debug APK with Gradle
+        run: ./gradlew assembleDebug
+
+      # 7. (可选) 查找生成的APK文件，用于调试路径问题
+      - name: Find and list generated APK files
+        run: find . -name "*.apk" -type f | head -n 5
+        continue-on-error: true  # 即使没找到文件，工作流也不会失败
+
+      # 8. 上传APK作为工作流产物
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7  # 产物在GitHub上保留7天
