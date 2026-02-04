@@ -33,7 +33,13 @@ jobs:
       run: chmod +x PromptImageManager/gradlew
       
     - name: Build with Gradle
-      run: cd PromptImageManager && ./gradlew assembleDebug
+      run: |
+        cd PromptImageManager
+        ls -la  # 看看文件结构
+        cat gradle.properties 2>/dev/null || echo "No gradle.properties"
+        ./gradlew assembleDebug --stacktrace --info  # 详细输出
+        echo "Exit code: $?"
+        find . -name "*.apk" -type f 2>/dev/null || echo "No APK found"
       
     - name: Find APK files
       run: find PromptImageManager -name "*.apk" -type f
