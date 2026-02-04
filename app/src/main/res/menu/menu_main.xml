@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <item
+        android:id="@+id/action_ai_chat"
+        android:title="AI聊天"
+        android:icon="@android:drawable/ic_menu_send"
+        app:showAsAction="ifRoom" />
+    
+    <item
+        android:id="@+id/action_image_generation"
+        android:title="AI生图"
+        android:icon="@android:drawable/ic_menu_edit"
+        app:showAsAction="ifRoom" />
+    
+    <item
+        android:id="@+id/action_video_generation"
+        android:title="AI视频"
+        android:icon="@android:drawable/ic_media_play"
+        app:showAsAction="ifRoom" />
+    
+    <item
+        android:id="@+id/action_categories"
+        android:title="@string/title_categories"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        app:showAsAction="ifRoom" />
+    
+    <item
+        android:id="@+id/action_api_config"
+        android:title="API配置"
+        android:icon="@android:drawable/ic_menu_preferences"
+        app:showAsAction="never" />
+    
+</menu>
