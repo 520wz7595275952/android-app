@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">提示词图片管理</string>
+    <string name="title_home">图片列表</string>
+    <string name="title_categories">分类</string>
+    <string name="add_image">添加图片</string>
+    <string name="edit_prompt">编辑提示词</string>
+    <string name="copy_prompt">复制提示词</string>
+    <string name="delete_image">删除图片</string>
+    <string name="search_hint">搜索提示词...</string>
+    <string name="category_all">全部</string>
+    <string name="category_uncategorized">未分类</string>
+    <string name="add_category">添加分类</string>
+    <string name="category_name">分类名称</string>
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="prompt_hint">在此输入提示词...</string>
+    <string name="select_category">选择分类</string>
+    <string name="image_saved">图片已保存</string>
+    <string name="prompt_copied">提示词已复制</string>
+    <string name="confirm_delete">确定要删除这张图片吗？</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="share_image">分享图片</string>
+    <string name="no_images">暂无图片</string>
+    <string name="add_from_gallery">从相册添加</string>
+    <string name="add_from_share">从其他应用分享</string>
+</resources>
